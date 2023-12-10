@@ -1,0 +1,3 @@
+[submodule "src/sjtu_drone"]
+	path = src/sjtu_drone
+	url = git@github.com:ayushchakra/sjtu_drone.git
