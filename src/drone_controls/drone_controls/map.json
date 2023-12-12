@@ -60,5 +60,137 @@
                 0.0000
             ]
         }
-    }
+    },
+    "window_corner_positions": [
+        {
+            "name": "WINDOW_ONE",
+            "left_top_corner": [
+                1.2500,
+                7.4000,
+                2.375
+            ],
+            "right_bottom_corner": [
+                1.2500,
+                3.5000,
+                1.8500
+            ],
+            "required_yaw": 0
+        },
+        {
+            "name": "WINDOW_TWO",
+            "left_top_corner": [
+                1.2500,
+                -0.1250,
+                2.4500
+            ],
+            "right_bottom_corner": [
+                1.2500,
+                -1.000,
+                0.7500
+            ],
+            "required_yaw": 0
+        },
+        {
+            "name": "WINDOW_THREE",
+            "left_top_corner": [
+                1.2500,
+                -4.8000,
+                2.4500
+            ],
+            "right_bottom_corner": [
+                1.2500,
+                -5.700,
+                0.7500
+            ],
+            "required_yaw": 0
+        },
+        {
+            "name": "CORNER_ONE",
+            "point": [
+                1.0000,
+                -10.50000,
+                2.0000
+            ],
+            "required_yaw": 0.785398
+        },
+        {
+            "name": "WINDOW_FOUR",
+            "left_top_corner": [
+                4.5000,
+                -10.200,
+                2.5000
+            ],
+            "right_bottom_corner": [
+                5.7000,
+                -10.200,
+                0.2000
+            ],
+            "required_yaw": 1.570796
+        },
+        {
+            "name": "WINDOW_FIVE",
+            "left_top_corner": [
+                6.1000,
+                -10.200,
+                2.5000
+            ],
+            "right_bottom_corner": [
+                7.200,
+                -10.200,
+                0.2000
+            ],
+            "required_yaw": 1.570796
+        },
+        {
+            "name": "WINDOW_SIX",
+            "left_top_corner": [
+                7.5000,
+                -10.200,
+                2.5000
+            ],
+            "right_bottom_corner": [
+                8.7000,
+                -10.200,
+                0.2000
+            ],
+            "required_yaw": 1.570796
+        },
+        {
+            "name": "WINDOW_SEVEN",
+            "left_top_corner": [
+                9.1000,
+                -10.200,
+                2.5000
+            ],
+            "right_bottom_corner": [
+                10.2000,
+                -10.200,
+                0.2000
+            ],
+            "required_yaw": 1.570796
+        },
+        {
+            "name": "CORNER_TWO",
+            "point": [
+                11.5000,
+                -10.50000,
+                2.0000
+            ],
+            "required_yaw": 2.35619
+        },
+        {
+            "name": "WINDOW_EIGHT",
+            "left_top_corner": [
+                11.2500,
+                -9.5000,
+                2.5000
+            ],
+            "right_bottom_corner": [
+                11.2500,
+                -4.9000,
+                0.2000
+            ],
+            "required_yaw": 3.1415926
+        }
+    ]
 }
