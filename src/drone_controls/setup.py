@@ -21,6 +21,9 @@ setup(
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": ["state_estimation = drone_controls.state_estimation:main"],
+        "console_scripts": [
+            "state_estimation = drone_controls.state_estimation:main",
+            "command_drone = drone_controls.fly:main",
+        ],
     },
 )
