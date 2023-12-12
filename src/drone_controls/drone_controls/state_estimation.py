@@ -98,7 +98,7 @@ class StateEstimationNode(Node):
         self.curr_pose = Pose()
         self.gt_pose = Pose()
 
-        with open(Path(__file__).parent / "map.json", "r") as file:
+        with open(Path(__file__).parent / "data/map.json", "r") as file:
             self.tag_lookup = {
                 tag_name: MapTagDatum(xyz_rpy=pose)
                 for (tag_name, pose) in json.load(file)["april_tag_positions"].items()

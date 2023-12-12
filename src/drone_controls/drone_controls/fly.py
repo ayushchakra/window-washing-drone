@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Empty, Bool
-from geometry_msgs.msg import Twist, Vector3, Pose
+from std_msgs.msg import Empty
+from geometry_msgs.msg import Twist, Vector3, Pose, Point
 import math
 import time
 from enum import Enum, auto
@@ -22,14 +22,15 @@ DESIRED_MAP_FEATURES = [
     # "WINDOW_ONE",
     # "WINDOW_TWO",
     "WINDOW_THREE",
-    "CORNER_ONE",
-    "WINDOW_FOUR",
-    "WINDOW_FIVE",
-    "WINDOW_SIX",
-    "WINDOW_SEVEN",
-    "CORNER_TWO",
-    "WINDOW_EIGHT",
+    # "CORNER_ONE",
+    # "WINDOW_FOUR",
+    # "WINDOW_FIVE",
+    # "WINDOW_SIX",
+    # "WINDOW_SEVEN",
+    # "CORNER_TWO",
+    # "WINDOW_EIGHT",
 ]
+ENABLE_LOGGING = True
 
 
 class DroneState(Enum):
@@ -49,6 +50,8 @@ def euler_from_quaternion(x, y, z, w):
 
 
 class TrajectoryPlanner(ABC):
+    name: str
+
     @cached_property
     def trajectory_points(self) -> np.ndarray:
         raise NotImplementedError
@@ -149,12 +152,12 @@ class FlyNode(Node):
         self.vel_cmd = self.create_publisher(Twist, "/drone/cmd_vel", 10)
         self.create_subscription(Pose, "/drone/gt_pose", self.update_state, 10)
         self.yaw = 0
-        self.pose = None
+        self.pose: Point = None
 
         self.create_timer(0.1, self.run_loop)
         self.state = DroneState.INIT
 
-        with open(Path(__file__).parent / "map.json", "r") as file:
+        with open(Path(__file__).parent / "data/map.json", "r") as file:
             self.window_corner_positions = json.load(file)["window_corner_positions"]
 
         self.map_features: List[TrajectoryPlanner] = []
@@ -169,6 +172,9 @@ class FlyNode(Node):
         self.feature_idx = -1
         self.trajectory_pt_idx = -1
 
+        if ENABLE_LOGGING:
+            self.log_data = {}
+
     def update_state(self, msg: Pose):
         self.pose = msg.position
         self.yaw = euler_from_quaternion(
@@ -176,8 +182,12 @@ class FlyNode(Node):
         )
 
     @property
+    def curr_map_feature(self):
+        return self.map_features[self.feature_idx]
+
+    @property
     def curr_trajectory_pts(self):
-        return self.map_features[self.feature_idx].trajectory_points
+        return self.curr_map_feature.trajectory_points
 
     @property
     def curr_setpoint(self):
@@ -188,6 +198,21 @@ class FlyNode(Node):
     def run_loop(self):
         print(self.state)
         print(self.curr_setpoint)
+        if ENABLE_LOGGING and self.trajectory_pt_idx > 0:
+            if not isinstance(self.curr_map_feature, WindowDatum):
+                raise RuntimeError("Invalid Type for the current map feature")
+            if self.curr_map_feature.name not in self.log_data.keys():
+                self.log_data[self.curr_map_feature.name] = {
+                    "window_coordinates": {
+                        "top_left_corner": self.curr_map_feature.left_top_corner,
+                        "right_buttom_corner": self.curr_map_feature.right_bottom_corner,
+                    },
+                    "drone_poses": [],
+                }
+            self.log_data[self.curr_map_feature.name]["drone_poses"].append(
+                [self.pose.x, self.pose.y, self.pose.z]
+            )
+
         if self.state == DroneState.INIT:
             self.takeoff.publish(Empty())
             self.state = DroneState.TAKEOFF
@@ -202,13 +227,15 @@ class FlyNode(Node):
                 + (self.pose.y - self.curr_setpoint[1]) ** 2
                 + (self.pose.z - self.curr_setpoint[2]) ** 2
             ) ** 0.5 < DIST_THRESH:
-                self.trajectory_pt_idx += 1
-                if self.trajectory_pt_idx == len(self.curr_trajectory_pts):
-                    self.feature_idx += 1
-                    if self.feature_idx == len(self.map_features):
+                if self.trajectory_pt_idx + 1 >= len(self.curr_trajectory_pts):
+                    if self.feature_idx + 1 == len(self.map_features):
                         self.state = DroneState.LANDING
+                        return
                     else:
+                        self.feature_idx += 1
                         self.trajectory_pt_idx = 0
+                else:
+                    self.trajectory_pt_idx += 1
             vel = np.array(
                 [
                     (self.curr_setpoint[0] - self.pose.x) / 2.5,
@@ -237,6 +264,10 @@ class FlyNode(Node):
             )
         if self.state == DroneState.LANDING:
             self.land.publish(Empty())
+            with open(Path(__file__).parent / "data/drone_panning.json", "w") as file:
+                json.dump(self.log_data, file, indent=4)
+
+            rclpy.shutdown()
 
 
 def main(args=None):
