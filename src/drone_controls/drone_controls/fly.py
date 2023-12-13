@@ -13,22 +13,22 @@ import json
 from abc import ABC
 from functools import cached_property
 
-PANNING_STEP_SIZE = 0.30  # m
+PANNING_STEP_SIZE = 0.40  # m
 DIST_THRESH = 0.20  # m
 TAKEOFF_HEIGHT_THRESHOLD = 0.7  # m
 DIST_FROM_WALL = 0.6  # m
 Z_OFFSET_FROM_WINDOW = 0.2  # m
 DESIRED_MAP_FEATURES = [
-    # "WINDOW_ONE",
-    # "WINDOW_TWO",
+    "WINDOW_ONE",
+    "WINDOW_TWO",
     "WINDOW_THREE",
-    # "CORNER_ONE",
-    # "WINDOW_FOUR",
-    # "WINDOW_FIVE",
-    # "WINDOW_SIX",
-    # "WINDOW_SEVEN",
-    # "CORNER_TWO",
-    # "WINDOW_EIGHT",
+    "CORNER_ONE",
+    "WINDOW_FOUR",
+    "WINDOW_FIVE",
+    "WINDOW_SIX",
+    "WINDOW_SEVEN",
+    "CORNER_TWO",
+    "WINDOW_EIGHT",
 ]
 ENABLE_LOGGING = True
 
@@ -150,7 +150,7 @@ class FlyNode(Node):
         self.takeoff = self.create_publisher(Empty, "/drone/takeoff", 10)
         self.land = self.create_publisher(Empty, "/drone/land", 10)
         self.vel_cmd = self.create_publisher(Twist, "/drone/cmd_vel", 10)
-        self.create_subscription(Pose, "/drone/gt_pose", self.update_state, 10)
+        self.create_subscription(Pose, "/drone/state_estimate", self.update_state, 10)
         self.yaw = 0
         self.pose: Point = None
 
@@ -196,6 +196,7 @@ class FlyNode(Node):
         return self.curr_trajectory_pts[self.trajectory_pt_idx]
 
     def run_loop(self):
+        self.get_logger().debug(self.state)
         print(self.state)
         print(self.curr_setpoint)
         if ENABLE_LOGGING and self.trajectory_pt_idx > 0:
@@ -248,7 +249,7 @@ class FlyNode(Node):
                     [-np.sin(-self.yaw), np.cos(-self.yaw)],
                 ]
             )
-            drone_vel = vel @ rot
+            drone_vel = (vel @ rot) * 2
             self.vel_cmd.publish(
                 Twist(
                     linear=Vector3(

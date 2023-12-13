@@ -139,6 +139,10 @@ class StateEstimationNode(Node):
                     (self.ang_vel_z + self.prev_ang_vel_z) / 2 * self.delta_t
                 )
                 self.curr_yaw % (2 * np.pi)
+                yaw_quat = R.from_euler("xyz", [0, 0, self.curr_yaw]).as_quat()
+                self.curr_pose.orientation = Quaternion(
+                    x=yaw_quat[0], y=yaw_quat[1], z=yaw_quat[2], w=yaw_quat[3]
+                )
 
             self.odom_data["est_poses"].append(
                 [
