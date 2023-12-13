@@ -24,6 +24,7 @@ setup(
         "console_scripts": [
             "state_estimation = drone_controls.state_estimation:main",
             "command_drone = drone_controls.fly:main",
+            "teleop = drone_controls.teleop:main",
         ],
     },
 )
