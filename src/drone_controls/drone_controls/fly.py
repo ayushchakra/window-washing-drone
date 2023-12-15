@@ -10,16 +10,16 @@ import json
 from .helpers import *
 
 DESIRED_MAP_FEATURES = [
-    # "WINDOW_ONE",
-    # "WINDOW_TWO",
+    "WINDOW_ONE",
+    "WINDOW_TWO",
     "WINDOW_THREE",
-    # "CORNER_ONE",
-    # "WINDOW_FOUR",
-    # "WINDOW_FIVE",
-    # "WINDOW_SIX",
-    # "WINDOW_SEVEN",
-    # "CORNER_TWO",
-    # "WINDOW_EIGHT",
+    "CORNER_ONE",
+    "WINDOW_FOUR",
+    "WINDOW_FIVE",
+    "WINDOW_SIX",
+    "WINDOW_SEVEN",
+    "CORNER_TWO",
+    "WINDOW_EIGHT",
 ]
 ENABLE_LOGGING = True
 
